@@ -10,6 +10,12 @@ A Flutter Calendar
 
 ![image](https://github.com/caesar-feng/FlutterCalendar/blob/main/gif/1614422424029788.gif)
 
+**Add this to your package's pubspec.yaml file:**
+
+```
+dependencies:
+  imba_calendar: ^0.0.1
+```
 
 ```dart
   @override
