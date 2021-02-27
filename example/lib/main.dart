@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_calendar/Calendar.dart';
-import 'package:flutter_calendar/CalendarController.dart';
-import 'package:flutter_calendar/utils/CalendarBuilder.dart';
-import 'package:flutter_calendar/utils/CalendarItemState.dart';
-import 'package:flutter_calendar/utils/StickyTabBarDelegate.dart';
+import 'package:imba_calendar/Calendar.dart';
+import 'package:imba_calendar/CalendarController.dart';
+import 'package:imba_calendar/utils/CalendarBuilder.dart';
+import 'package:imba_calendar/utils/CalendarItemState.dart';
+import 'package:imba_calendar/utils/StickyTabBarDelegate.dart';
 
 void main() {
   runApp(MyApp());

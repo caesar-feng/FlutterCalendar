@@ -1,8 +1,7 @@
-name: flutter_calendar
+name: imba_calendar
 description: A Flutter Calendar
 version: 0.0.1
-author: Caesar.Feng
-homepage:
+homepage: https://github.com/caesar-feng/FlutterCalendar
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
