@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 
-const double ToolBarHeight = 48;
+const double SliverTabBarHeight = 48;
 
-class StickyTabBarDelegate extends SliverPersistentHeaderDelegate {
+class SliverTabBarDelegate extends SliverPersistentHeaderDelegate {
   final TabBar child;
   final double height;
 
-  StickyTabBarDelegate({@required this.child, this.height = ToolBarHeight});
+  SliverTabBarDelegate(
+      {@required this.child, this.height = SliverTabBarHeight});
 
   @override
   Widget build(

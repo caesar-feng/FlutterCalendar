@@ -16,24 +16,35 @@ class Calendar extends StatefulWidget {
   final Widget child;
   final CalendarItemBuilder itemBuilder;
   final SliverAppBarBuilder sliverAppBarBuilder;
-  final isisCalendarExpanded;
+  final isCalendarExpanded;
   final Color backgroundColor;
   final ValueChanged<CalendarItemState> onItemClick;
   final List<Widget> slivers;
   final CalendarController calendarController;
+  final SliverPersistentHeader sliverPersistentHeader;
+  final bool showSliverPersistentHeader;
+  final double sliverTabBarHeight;
 
   const Calendar({
     Key key,
     this.childAspectRatio = ChildAspectRatio,
     this.child,
-    this.isisCalendarExpanded = true,
+    this.isCalendarExpanded = true,
     this.backgroundColor = Colors.white,
     @required this.itemBuilder,
     this.sliverAppBarBuilder,
     this.onItemClick,
     this.slivers = const [],
     this.calendarController,
-  }) : super(key: key);
+    this.showSliverPersistentHeader = true,
+    this.sliverPersistentHeader,
+    this.sliverTabBarHeight,
+  })
+      :
+  //if you want a custom sliverPersistentHeader you should tell me the widget height
+        assert((sliverPersistentHeader != null && sliverTabBarHeight != null) ||
+            (sliverPersistentHeader == null && sliverTabBarHeight == null)),
+        super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -89,6 +100,8 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
 
   ValueChanged<CalendarItemState> _onItemClick;
 
+  double sliverTabBarHeight = SliverTabBarHeight;
+
   CalendarPagerItemBean get selectItemData {
     return _buildItemData(pageIndex);
   }
@@ -104,7 +117,7 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
     DateTime now = DateTime.now();
     pageIndex = CalendarBuilder.dateTimeToIndex(now);
 
-    isCalendarExpanded = widget.isisCalendarExpanded;
+    isCalendarExpanded = widget.isCalendarExpanded;
 
     _day = now.day;
 
@@ -121,20 +134,34 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
     mainController.addListener(() => _onMainScrolling());
 
     _onItemClick = (v) {
-      _day = v.day;
+      if (v.dateTime.month == month && v.dateTime.year == year) {
+        _day = v.day;
+      } else {
+        _day = -1;
+      }
       setState(() {});
       if (widget.onItemClick != null) {
         widget.onItemClick(v);
       }
     };
+
     calendarController = widget.calendarController;
-    calendarController.addListener(_onControl);
+    calendarController?.addListener(_onControl);
+
+    if (widget.sliverPersistentHeader != null) {
+      sliverTabBarHeight = widget.sliverTabBarHeight;
+    }
+
+    if (!widget.showSliverPersistentHeader) {
+      sliverTabBarHeight = 0;
+    }
+
     super.initState();
   }
 
   @override
   void dispose() {
-    calendarController.removeListener(_onControl);
+    calendarController?.removeListener(_onControl);
     super.dispose();
   }
 
@@ -167,10 +194,13 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     if (screenSize == null) {
-      screenSize = MediaQuery.of(context).size.width;
+      screenSize = MediaQuery
+          .of(context)
+          .size
+          .width;
       toolbarHeight = (screenSize -
-              GridHorizontalPadding * 2 -
-              GridSpacing * (HorizontalItemCount - 1)) /
+          GridHorizontalPadding * 2 -
+          GridSpacing * (HorizontalItemCount - 1)) /
           HorizontalItemCount /
           widget.childAspectRatio;
       expandedHeight = _getExpandHeight(lines);
@@ -178,8 +208,9 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
 
       if (!isCalendarExpanded) {
         Future.delayed(Duration.zero, () {
-          mainController.jumpTo(
-              _getExpandHeight(lines - 1) + kToolbarHeight + ToolBarHeight);
+          mainController.jumpTo(_getExpandHeight(lines - 1) +
+              kToolbarHeight +
+              sliverTabBarHeight);
         });
       }
     }
@@ -195,9 +226,13 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
           slivers: [
             if (widget.sliverAppBarBuilder != null)
               widget.sliverAppBarBuilder(context, year, month, day),
-            _buildSliverPersistentHeader(),
+            if (widget.showSliverPersistentHeader)
+              widget.sliverPersistentHeader == null
+                  ? _buildSliverPersistentHeader()
+                  : widget.sliverPersistentHeader,
             _buildCalendar(),
-          ]..addAll(widget.slivers),
+          ]
+            ..addAll(widget.slivers),
         ),
       ),
     );
@@ -206,8 +241,9 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
   _changeDate(DateTime dateTime) {
     if (isCalendarExpanded) {
       pageIndex = CalendarBuilder.dateTimeToIndex(dateTime);
-      expandedHeight = _getExpandHeight(lines);
       pageController.jumpToPage(pageIndex);
+      expandedHeight = _getExpandHeight(lines);
+      setState(() {});
     } else {
       int num = 0;
       if (dateTime.isBefore(shrinkDateTime)) {
@@ -231,7 +267,7 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
 
   _shrinkCalender() {
     double height =
-        _getExpandHeight(lines - 1) + kToolbarHeight + ToolBarHeight;
+        _getExpandHeight(lines - 1) + kToolbarHeight + sliverTabBarHeight;
     if (mainController != null &&
         mainController.hasClients &&
         height != mainController.offset) {
@@ -245,14 +281,14 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
       builder: (c, b) {
         flexibleSpaceHeight = b.biggest.height;
         if (flexibleSpaceHeight <=
-                toolbarHeight * lines + GridVerticalPadding * 2 &&
+            toolbarHeight * lines + GridVerticalPadding * 2 &&
             gridController.hasClients &&
             !isHorizontalScroll) {
           gridController.jumpTo((toolbarHeight * lines +
-                      GridVerticalPadding * 2 -
-                      flexibleSpaceHeight) *
-                  selectLine /
-                  (lines - 1) +
+              GridVerticalPadding * 2 -
+              flexibleSpaceHeight) *
+              selectLine /
+              (lines - 1) +
               selectLine * GridSpacing);
         }
 
@@ -392,7 +428,9 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
   _onMainScrolling() {
     if (!isCalendarExpanded &&
         mainController.offset >
-            _getExpandHeight(lines - 1) / 2 + kToolbarHeight + ToolBarHeight) {
+            _getExpandHeight(lines - 1) / 2 +
+                kToolbarHeight +
+                sliverTabBarHeight) {
       isCalendarExpanded = true;
       expandedHeight = _getExpandHeight(lines);
       setState(() {});
@@ -412,7 +450,7 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
     if (move > pageOffset) {
       offset = lockingPageIndex + 1;
     } else
-    //右滑
+      //右滑
     if (move < pageOffset) {
       offset = lockingPageIndex - 1;
     } else {
@@ -435,21 +473,21 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
   Widget _buildSliverPersistentHeader() {
     return SliverPersistentHeader(
       pinned: true,
-      delegate: StickyTabBarDelegate(
+      delegate: SliverTabBarDelegate(
           child: TabBar(
-        indicatorColor: Colors.transparent,
-        labelColor: Colors.transparent,
-        controller: tabController,
-        tabs: [
-          _buildTitleDate("周日"),
-          _buildTitleDate("周一"),
-          _buildTitleDate("周二"),
-          _buildTitleDate("周三"),
-          _buildTitleDate("周四"),
-          _buildTitleDate("周五"),
-          _buildTitleDate("周六"),
-        ],
-      )),
+            indicatorColor: Colors.transparent,
+            labelColor: Colors.transparent,
+            controller: tabController,
+            tabs: [
+              _buildTitleDate("周日"),
+              _buildTitleDate("周一"),
+              _buildTitleDate("周二"),
+              _buildTitleDate("周三"),
+              _buildTitleDate("周四"),
+              _buildTitleDate("周五"),
+              _buildTitleDate("周六"),
+            ],
+          )),
     );
   }
 
@@ -458,6 +496,7 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
       child: Text(
         date,
         maxLines: 1,
+        style: TextStyle(color: Colors.black),
       ),
     );
   }
