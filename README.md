@@ -14,7 +14,7 @@ A Flutter Calendar
 
 ```
 dependencies:
-  imba_calendar: ^0.0.2
+  imba_calendar: ^0.0.3
 ```
 
 ```dart

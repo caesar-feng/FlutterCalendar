@@ -61,8 +61,8 @@ class CalendarBuilder {
     return bean;
   }
 
-  static CalendarPagerItemBean buildWeekData(
-      DateTime startDate, DateTime currentDate) {
+  static CalendarPagerItemBean buildWeekData(DateTime startDate,
+      DateTime currentDate) {
     List<CalendarItemState> beans = [];
     CalendarItemState _bean;
     int index = dateTimeToIndex(startDate);
@@ -78,7 +78,7 @@ class CalendarBuilder {
     }
 
     List<CalendarItemState> week =
-        beans.where((element) => !element.isCurrentMonth).toList();
+    beans.where((element) => !element.isCurrentMonth).toList();
     if (week.length == HorizontalItemCount) {
       beans.forEach((element) {
         element.isCurrentMonth = true;
@@ -102,10 +102,8 @@ class CalendarBuilder {
     return year * 12 + month - 1;
   }
 
-  static CalendarPagerItemBean _buildData(
-    int index,
-    DateTime dateTime,
-  ) {
+  static CalendarPagerItemBean _buildData(int index,
+      DateTime dateTime,) {
     List<CalendarItemState> beans = [];
     final days = DateTime(dateTime.year, dateTime.month + 1, 0).day;
     DateTime startWeekDay = DateTime(dateTime.year, dateTime.month, 1);
@@ -130,6 +128,11 @@ class CalendarBuilder {
     while (endWeekDay.weekday != 6) {
       endWeekDay = endWeekDay.add(Duration(days: 1));
       beans.add(CalendarItemState.build(endWeekDay, isCurrentMonth: false));
+    }
+
+    final len = beans.length;
+    for (int i = 0; i < len; i++) {
+      beans[i].index = i;
     }
 
     int todayIndex = beans.indexOf(_bean);

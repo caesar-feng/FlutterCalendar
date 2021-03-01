@@ -14,14 +14,13 @@ class CalendarPagerItem extends StatefulWidget {
   final Color backgroundColor;
   final ValueChanged<CalendarItemState> onItemClick;
 
-  const CalendarPagerItem(
-      {Key key,
-      @required this.itemBuilder,
-      this.onItemClick,
-      this.bean,
-      this.childAspectRatio = ChildAspectRatio,
-      this.backgroundColor = Colors.white,
-      this.controller})
+  const CalendarPagerItem({Key key,
+    @required this.itemBuilder,
+    this.onItemClick,
+    this.bean,
+    this.childAspectRatio = ChildAspectRatio,
+    this.backgroundColor = Colors.white,
+    this.controller})
       : super(key: key);
 
   @override
@@ -62,7 +61,6 @@ class _CalendarPagerItemState extends State<CalendarPagerItem> {
               crossAxisSpacing: GridSpacing,
               mainAxisSpacing: GridSpacing),
           itemBuilder: (c, index) {
-            beans[index].index = index;
             return GestureDetector(
               child: itemBuilder(c, index, beans[index]),
               onTap: () {

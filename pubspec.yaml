@@ -1,6 +1,6 @@
 name: imba_calendar
 description: A Flutter Calendar
-version: 0.0.2
+version: 0.0.3
 homepage: https://github.com/caesar-feng/FlutterCalendar
 
 environment:

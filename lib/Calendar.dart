@@ -39,8 +39,9 @@ class Calendar extends StatefulWidget {
     this.showSliverPersistentHeader = true,
     this.sliverPersistentHeader,
     this.sliverTabBarHeight,
-  })  :
-        //if you want a custom sliverPersistentHeader you should tell me the widget height
+  })
+      :
+  //if you want a custom sliverPersistentHeader you should tell me the widget height
         assert((sliverPersistentHeader != null && sliverTabBarHeight != null) ||
             (sliverPersistentHeader == null && sliverTabBarHeight == null)),
         super(key: key);
@@ -193,10 +194,13 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     if (screenSize == null) {
-      screenSize = MediaQuery.of(context).size.width;
+      screenSize = MediaQuery
+          .of(context)
+          .size
+          .width;
       toolbarHeight = (screenSize -
-              GridHorizontalPadding * 2 -
-              GridSpacing * (HorizontalItemCount - 1)) /
+          GridHorizontalPadding * 2 -
+          GridSpacing * (HorizontalItemCount - 1)) /
           HorizontalItemCount /
           widget.childAspectRatio;
       expandedHeight = _getExpandHeight(lines);
@@ -227,7 +231,8 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
                   ? _buildSliverPersistentHeader()
                   : widget.sliverPersistentHeader,
             _buildCalendar(),
-          ]..addAll(widget.slivers),
+          ]
+            ..addAll(widget.slivers),
         ),
       ),
     );
@@ -253,7 +258,7 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
     expandedHeight = _getExpandHeight(lines);
     try {
       final CalendarItemState state = selectItemData.beans.firstWhere(
-          (element) => element.dateTime == CalendarBuilder.selectedDate);
+              (element) => element.dateTime == CalendarBuilder.selectedDate);
       selectItemData.selectedLine = selectItemData.beans.indexOf(state) ~/ 7;
     } catch (e) {}
     setState(() {});
@@ -285,14 +290,14 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
       builder: (c, b) {
         flexibleSpaceHeight = b.biggest.height;
         if (flexibleSpaceHeight <=
-                toolbarHeight * lines + GridVerticalPadding * 2 &&
+            toolbarHeight * lines + GridVerticalPadding * 2 &&
             gridController.hasClients &&
             !isHorizontalScroll) {
           gridController.jumpTo((toolbarHeight * lines +
-                      GridVerticalPadding * 2 -
-                      flexibleSpaceHeight) *
-                  selectLine /
-                  (lines - 1) +
+              GridVerticalPadding * 2 -
+              flexibleSpaceHeight) *
+              selectLine /
+              (lines - 1) +
               selectLine * GridSpacing);
         }
 
@@ -345,8 +350,8 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
     try {
       List<CalendarItemState> list = bean.beans
           .where((element) =>
-              element.isCurrentMonth &&
-              element.dateTime == CalendarBuilder.selectedDate)
+      element.isCurrentMonth &&
+          element.dateTime == CalendarBuilder.selectedDate)
           .toList();
       if (list.length > 0) {
         _day = list[0].dateTime.day;
@@ -362,9 +367,21 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
         shrinkDateTime.add(
             Duration(days: HorizontalItemCount * (i - WeekPageInitialIndex))),
         selectItemData.currentDate);
-    pageIndex = bean.index;
-    pageController.jumpToPage(pageIndex);
+    CalendarItemState state;
+    try {
+      state = bean.beans.firstWhere((element) =>
+      element.dateTime.day == CalendarBuilder.selectedDate.day &&
+          element.dateTime.month == CalendarBuilder.selectedDate.month
+          && element.dateTime.year == CalendarBuilder.selectedDate.year);
+    } catch (e) {}
 
+    if (state != null) {
+      pageIndex = CalendarBuilder.dateTimeToIndex(state.dateTime);
+    } else {
+      pageIndex = bean.index;
+    }
+
+    pageController.jumpToPage(pageIndex);
     _updateDay(bean);
 
     try {
@@ -456,7 +473,7 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
     if (move > pageOffset) {
       offset = lockingPageIndex + 1;
     } else
-    //右滑
+      //右滑
     if (move < pageOffset) {
       offset = lockingPageIndex - 1;
     } else {
@@ -481,19 +498,19 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
       pinned: true,
       delegate: SliverTabBarDelegate(
           child: TabBar(
-        indicatorColor: Colors.transparent,
-        labelColor: Colors.transparent,
-        controller: tabController,
-        tabs: [
-          _buildTitleDate("周日"),
-          _buildTitleDate("周一"),
-          _buildTitleDate("周二"),
-          _buildTitleDate("周三"),
-          _buildTitleDate("周四"),
-          _buildTitleDate("周五"),
-          _buildTitleDate("周六"),
-        ],
-      )),
+            indicatorColor: Colors.transparent,
+            labelColor: Colors.transparent,
+            controller: tabController,
+            tabs: [
+              _buildTitleDate("周日"),
+              _buildTitleDate("周一"),
+              _buildTitleDate("周二"),
+              _buildTitleDate("周三"),
+              _buildTitleDate("周四"),
+              _buildTitleDate("周五"),
+              _buildTitleDate("周六"),
+            ],
+          )),
     );
   }
 
