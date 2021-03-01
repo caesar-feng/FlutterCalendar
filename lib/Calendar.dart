@@ -239,12 +239,9 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
   }
 
   _changeDate(DateTime dateTime) {
-    if (isCalendarExpanded) {
-      pageIndex = CalendarBuilder.dateTimeToIndex(dateTime);
-      pageController.jumpToPage(pageIndex);
-      expandedHeight = _getExpandHeight(lines);
-      setState(() {});
-    } else {
+    CalendarBuilder.selectedDate =
+        DateTime(dateTime.year, dateTime.month, dateTime.day);
+    if (!isCalendarExpanded) {
       int num = 0;
       if (dateTime.isBefore(shrinkDateTime)) {
         //往前减一周
@@ -254,6 +251,18 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
       num += du.inDays ~/ 7;
       weekPageController.jumpToPage(WeekPageInitialIndex + num);
     }
+
+    // if (isCalendarExpanded) {
+    pageIndex = CalendarBuilder.dateTimeToIndex(dateTime);
+    pageController.jumpToPage(pageIndex);
+    expandedHeight = _getExpandHeight(lines);
+    try {
+      final CalendarItemState state = selectItemData.beans.firstWhere((
+          element) => element.dateTime == CalendarBuilder.selectedDate);
+      selectItemData.selectedLine = selectItemData.beans.indexOf(state) ~/ 7;
+    } catch (e) {}
+    setState(() {});
+    _updateDay(selectItemData);
   }
 
   _expandedCalender() {
@@ -340,7 +349,9 @@ class _CalendarState extends State<Calendar> with TickerProviderStateMixin {
   _updateDay(CalendarPagerItemBean bean) {
     try {
       List<CalendarItemState> list = bean.beans
-          .where((element) => element.dateTime == CalendarBuilder.selectedDate)
+          .where((element) =>
+      element.isCurrentMonth &&
+          element.dateTime == CalendarBuilder.selectedDate)
           .toList();
       if (list.length > 0) {
         _day = list[0].dateTime.day;

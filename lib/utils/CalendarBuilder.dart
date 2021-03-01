@@ -34,8 +34,6 @@ class CalendarBuilder {
       (pageBean, gridBean) {
     int selectLine = gridBean.index ~/ HorizontalItemCount;
     pageBean.selectedLine = selectLine;
-    print(
-        "selectLine = $selectLine gridBean ${gridBean.dateTime} index = ${gridBean.index}");
     if (pageBean.beans.length > 7) {
       _cache[pageBean.index] = pageBean;
     }
