@@ -12,7 +12,7 @@ A Flutter Calendar
 
 **Add this to your package's pubspec.yaml file:**
 
-test url https://www.ixiaojin.com/#/
+web demo url https://www.ixiaojin.com/#/
 
 ```
 dependencies:
