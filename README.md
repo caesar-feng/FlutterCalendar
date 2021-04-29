@@ -2,6 +2,8 @@
 
 A Flutter Calendar
 
+web demo url https://www.ixiaojin.com/#/
+
 ![image](https://github.com/caesar-feng/FlutterCalendar/blob/main/gif/1614422274018151.gif)
 ![image](https://github.com/caesar-feng/FlutterCalendar/blob/main/gif/1614422281281666.gif)
 
@@ -11,8 +13,6 @@ A Flutter Calendar
 ![image](https://github.com/caesar-feng/FlutterCalendar/blob/main/gif/1614422424029788.gif)
 
 **Add this to your package's pubspec.yaml file:**
-
-web demo url https://www.ixiaojin.com/#/
 
 ```
 dependencies:
